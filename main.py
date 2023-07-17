@@ -3,19 +3,13 @@ import asyncio  # Работа с асинхронностью
 from aiogram import Bot, Dispatcher
 from aiogram.fsm.storage.memory import MemoryStorage
 
-from API.waifu import WaifuApi
 from config import config  # Config
-from handlers import common
-from middleware.api import WaifuApiMiddleWare
+from handlers import common, waifu
 
 
 def register_all_routers(dp: Dispatcher):
     dp.include_router(common.common_router)
-
-
-def register_all_middlewares(dp: Dispatcher, waifu_api: WaifuApi):
-    waifu_api_middleware = WaifuApiMiddleWare(waifu_api)
-    dp.update.middleware(waifu_api_middleware)
+    dp.include_router(waifu.waifu_router)
 
 
 async def main():
@@ -23,10 +17,6 @@ async def main():
     dp = Dispatcher(storage=MemoryStorage())  # Менеджер бота
 
     register_all_routers(dp)
-
-    waifu_api = WaifuApi()
-
-    register_all_middlewares(dp, waifu_api)
 
     try:
         print('Bot Started')
